@@ -28,26 +28,26 @@ class UserLoginSerilizer(serializers.ModelSerializer):
         
 
 class DoctorSerializer(serializers.ModelSerializer):
-    
+    id = serializers.IntegerField(required=False)
     class Meta:
         model = Doctor
-        fields = ['hospital','department','user']
+        fields = ['id','hospital','department','user']
         read_only_fields = ('user',)
 
 class UserProfileSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ('first_name', 'last_name','username', 'email')
+        fields = ('id','first_name', 'last_name','username', 'email')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        user = args[0]
-        if user.is_doctor:
+        users = args[0]
+        if  users.is_doctor:
             self.fields['doctor'] = DoctorSerializer()
+  
 
     def update(self, instance, validated_data):
-        print('iii',instance)
        
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
@@ -64,3 +64,18 @@ class UserProfileSerializer(serializers.ModelSerializer):
         return instance
             
             
+
+class UserProfileAdminSerializer(serializers.ModelSerializer):
+    doctor = DoctorSerializer(read_only=True)   
+    class Meta:
+        model = User
+        fields = ('id','first_name', 'last_name','username', 'email','is_active','doctor')
+
+ 
+    def update(self,instance,validated_data):
+        instance.is_active = validated_data.get('is_active',instance.is_active)
+        instance.save()
+        return instance
+    
+    
+

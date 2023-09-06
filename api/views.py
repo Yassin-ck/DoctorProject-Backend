@@ -1,15 +1,14 @@
 from django.shortcuts import render
 from rest_framework.response import Response
-from .serializers import UserRegistrationSerializer,UserLoginSerilizer,UserProfileSerializer
+from .serializers import UserRegistrationSerializer,UserLoginSerilizer,UserProfileSerializer,UserProfileAdminSerializer
 from rest_framework.views import APIView
 from .models import User
 from rest_framework import status
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from .custompermission import DoctorPermission
+from .custompermission import AdminPermission,UserPermision
 from rest_framework.decorators import permission_classes
-from rest_framework.renderers import JSONRenderer
-from django.http import HttpResponse,JsonResponse
+
 
 class UserRegistration(APIView):
     def post(self,request):
@@ -50,19 +49,46 @@ class UserLogin(APIView):
         return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
     
 
-# @permission_classes([DoctorPermission])
 class UserProfile(APIView):
     def get(self,request):
         serializer = UserProfileSerializer(request.user)
         return Response(serializer.data,status=status.HTTP_200_OK)
     
-    def put(self,request):
-        serializer = UserProfileSerializer(request.user,data=request.data)
+    def patch(self,request):
+        serializer = UserProfileSerializer(request.user,data=request.data,partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response({'msg':'Profile Updated ...','Profile':serializer.data},status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self,request):
+        user = User.objects.get(id=request.user.id)
+        user.delete()
+        return Response({"msg":"Deleted"},status=status.HTTP_200_OK)
 
-                   
-                   
 
+@permission_classes([AdminPermission])
+class UserProfileView(APIView):
+    def get(self,request):
+        user = User.objects.all()
+        serilaizer = UserProfileAdminSerializer(user,many=True)
+        return Response(serilaizer.data)
+    
+    def patch(self,request,pk=None):
+        if pk is not None:
+            user = User.objects.get(pk=pk)
+            serializer = UserProfileAdminSerializer(user,data=request.data,partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                if serializer.validated_data['is_active']:
+                    return Response({"msg":"User Unblocked !!!"},status=status.HTTP_200_OK)
+                return Response({"msg":"User Blocked !!!"},status=status.HTTP_200_OK)
+            return Response(serializer.errors)
+
+
+@permission_classes([UserPermision])
+class UserDoctorView(APIView):
+    def get(self,request):
+        user = User.objects.filter(is_doctor=True)
+        serializer = UserProfileAdminSerializer(user,many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)

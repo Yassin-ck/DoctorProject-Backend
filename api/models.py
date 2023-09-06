@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,BaseUserManager
+
 # Create your models here.
 
 
@@ -38,6 +39,8 @@ class User(AbstractBaseUser):
     last_name = models.CharField(max_length=50)
     is_doctor = models.BooleanField(default=False)
     is_admin = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    
     objects = UserManager()
     
     USERNAME_FIELD ='email'
