@@ -6,9 +6,9 @@ from .models import User
 from rest_framework import status
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from .custompermission import AdminPermission,UserPermision
+from .custompermission import UserPermision
+from rest_framework.permissions import IsAdminUser
 from rest_framework.decorators import permission_classes
-
 
 class UserRegistration(APIView):
     def post(self,request):
@@ -67,7 +67,7 @@ class UserProfile(APIView):
         return Response({"msg":"Deleted"},status=status.HTTP_200_OK)
 
 
-@permission_classes([AdminPermission])
+@permission_classes([IsAdminUser])
 class UserProfileView(APIView):
     def get(self,request):
         user = User.objects.all()
@@ -92,3 +92,5 @@ class UserDoctorView(APIView):
         user = User.objects.filter(is_doctor=True)
         serializer = UserProfileAdminSerializer(user,many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
+    
+  
