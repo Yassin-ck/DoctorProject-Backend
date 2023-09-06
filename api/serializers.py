@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import User,Doctor
 from rest_framework_simplejwt.tokens import RefreshToken,TokenError
 from rest_framework.exceptions import ValidationError
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type':'password'},write_only=True)
@@ -21,12 +22,14 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
 
 
-class UserLoginSerilizer(serializers.ModelSerializer):
-    email = serializers.EmailField()
-    class Meta:
-        model = User
-        fields = ['email','password']
-        
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        token['is_doctor'] = user.is_doctor
+        return token
+    
 
 class DoctorSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(required=False)
@@ -66,7 +69,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
                 else:
                     raise ValidationError("No doctor record found for this user.")
 
-        instance.save()
+        instance.save() 
         return instance
             
             
