@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import User,Doctor
 from rest_framework_simplejwt.tokens import RefreshToken,TokenError
+from rest_framework.exceptions import ValidationError
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type':'password'},write_only=True)
@@ -48,18 +49,23 @@ class UserProfileSerializer(serializers.ModelSerializer):
   
 
     def update(self, instance, validated_data):
-       
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.username = validated_data.get('username', instance.username)
         instance.email = validated_data.get('email', instance.email)
-       
+
         if instance.is_doctor:
-            doctors = Doctor.objects.get(user=instance)
-            doctor_value = list(validated_data.get('doctor').values()) 
-            doctors.hospital = doctor_value[0]
-            doctors.department = doctor_value[1]
-            doctors.save()
+            doctor_data = validated_data.get('doctor')
+            if doctor_data:
+                doctors = Doctor.objects.filter(user=instance)
+                if doctors.exists():
+                    doctor = doctors.first()  
+                    doctor.hospital = doctor_data.get('hospital', doctor.hospital)
+                    doctor.department = doctor_data.get('department', doctor.department)
+                    doctor.save()
+                else:
+                    raise ValidationError("No doctor record found for this user.")
+
         instance.save()
         return instance
             
