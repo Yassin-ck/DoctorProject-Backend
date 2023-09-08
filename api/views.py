@@ -10,7 +10,7 @@ from .custompermission import UserPermision
 from rest_framework.permissions import IsAdminUser
 from rest_framework.decorators import permission_classes
 from rest_framework_simplejwt.views import TokenObtainPairView
-class UserRegistration(APIView):
+class UserRegistration(APIView): 
     def post(self,request):
         print(request.data)
         serializer = UserRegistrationSerializer(data=request.data)
@@ -22,11 +22,11 @@ class UserRegistration(APIView):
                 is_doctor = serializer.validated_data['is_doctor']                
             )
             return Response({"msg":"User Registered Succesfully..."},status=status.HTTP_201_CREATED)
-        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
+        return Response({'msg':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
     
 
 class MyTokenObtainPairView(TokenObtainPairView):
-    serializer_class = MyTokenObtainPairSerializerl
+    serializer_class = MyTokenObtainPairSerializer
     
 
 class UserProfile(APIView):
@@ -49,10 +49,16 @@ class UserProfile(APIView):
 
 @permission_classes([IsAdminUser])
 class UserProfileView(APIView):
-    def get(self,request):
-        user = User.objects.all()
-        serilaizer = UserProfileAdminSerializer(user,many=True)
+    def get(self,request,pk=None):
+        if pk is None:
+            user = User.objects.exclude(id=request.user.id)
+            serilaizer = UserProfileAdminSerializer(user,many=True)
+            return Response(serilaizer.data)            
+        user = User.objects.get(pk=pk)
+        serilaizer = UserProfileAdminSerializer(user)
         return Response(serilaizer.data)
+            
+        
     
     def patch(self,request,pk=None):
         if pk is not None:
@@ -61,7 +67,7 @@ class UserProfileView(APIView):
             if serializer.is_valid():
                 serializer.save()
                 if serializer.validated_data['is_active']:
-                    return Response({"msg":"User Unblocked !!!"},status=status.HTTP_200_OK)
+                    return Response({"msg":"User Unblocked !!!!"},status=status.HTTP_200_OK)
                 return Response({"msg":"User Blocked !!!"},status=status.HTTP_200_OK)
             return Response(serializer.errors)
 
