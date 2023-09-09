@@ -28,21 +28,12 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        token['is_doctor'] = user.is_doctor
         token['username'] = user.username
-        token['email'] = user.email
-        token['first_name'] = user.first_name
-        token['last_name'] = user.last_name
+        token['is_doctor'] = user.is_doctor
         if hasattr(user,'is_admin'):
             token['is_admin'] = user.is_admin
-        token['last_name'] = user.last_name
-        if hasattr(user, 'doctor'):
-            doctor_profile = user.doctor
-            token['hospital'] = doctor_profile.hospital
-            token['department'] = doctor_profile.department
-
         return token
-    
+     
 
 class DoctorSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField(required=False)
