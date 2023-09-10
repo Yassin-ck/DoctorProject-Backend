@@ -54,6 +54,7 @@ class User(AbstractBaseUser):
         return True
     
     
+    
     @property
     def is_staff(self):
         return self.is_admin
@@ -64,5 +65,6 @@ class Doctor(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE,related_name='doctor')
     hospital = models.CharField(max_length=255,null=True,blank=True)
     department = models.CharField(max_length=255,null=True,blank=True)
+    is_verified = models.BooleanField(default=False)
     
     

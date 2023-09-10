@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.fields import empty
 from .models import User,Doctor
 from rest_framework_simplejwt.tokens import RefreshToken,TokenError
 from rest_framework.exceptions import ValidationError
@@ -43,7 +44,10 @@ class DoctorSerializer(serializers.ModelSerializer):
         model = Doctor
         fields = ['id','hospital','department','user']
         read_only_fields = ('user',)
+        
+    
 
+    
 class UserProfileSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(required=False)
     last_name = serializers.CharField(required=False)
@@ -76,6 +80,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
                     doctor = doctors.first()  
                     doctor.hospital = doctor_data.get('hospital', doctor.hospital)
                     doctor.department = doctor_data.get('department', doctor.department)
+                    if doctor.hospital is not None and doctor.department is not None:
+                        doctor.is_verified=True
                     doctor.save()
                 else:
                     raise ValidationError("No doctor record found for this user.")
@@ -93,7 +99,6 @@ class UserProfileAdminSerializer(serializers.ModelSerializer):
 
     def update(self,instance,validated_data):
         instance.is_active = validated_data.get('is_active',instance.is_active)
-       
         instance.save()
         return instance
     

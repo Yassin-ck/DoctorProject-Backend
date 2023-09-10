@@ -2,14 +2,14 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from .serializers import UserRegistrationSerializer,MyTokenObtainPairSerializer,UserProfileSerializer,UserProfileAdminSerializer
 from rest_framework.views import APIView
-from .models import User
+from .models import User,Doctor
 from rest_framework import status
-from django.contrib.auth import authenticate
-from rest_framework_simplejwt.tokens import RefreshToken, Token
 from .custompermission import UserPermision
 from rest_framework.permissions import IsAdminUser
 from rest_framework.decorators import permission_classes
 from rest_framework_simplejwt.views import TokenObtainPairView
+from django.db.models import Case,When,Value,BooleanField
+
 class UserRegistration(APIView): 
     def post(self,request):
         print(request.data)
@@ -21,6 +21,7 @@ class UserRegistration(APIView):
                 password = serializer.validated_data['password'],
                 is_doctor = serializer.validated_data['is_doctor']                
             )
+        
             return Response({"msg":"User Registered Succesfully..."},status=status.HTTP_201_CREATED)
         return Response({'msg':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
     
@@ -51,7 +52,7 @@ class UserProfile(APIView):
 class UserProfileView(APIView):
     def get(self,request,pk=None):
         if pk is None:
-            user = User.objects.exclude(id=request.user.id)
+            user = User.objects.exclude(is_admin=True)
             serilaizer = UserProfileAdminSerializer(user,many=True)
             return Response(serilaizer.data)            
         user = User.objects.get(pk=pk)
@@ -75,7 +76,8 @@ class UserProfileView(APIView):
 @permission_classes([UserPermision])
 class UserDoctorView(APIView):
     def get(self,request):
-        user = User.objects.filter(is_doctor=True)
+        user = User.objects.filter(doctor__is_verified=True)
+        print(user)
         serializer = UserProfileAdminSerializer(user,many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
     
