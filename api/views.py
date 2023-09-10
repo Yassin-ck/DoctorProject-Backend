@@ -8,7 +8,6 @@ from .custompermission import UserPermision
 from rest_framework.permissions import IsAdminUser
 from rest_framework.decorators import permission_classes
 from rest_framework_simplejwt.views import TokenObtainPairView
-from django.db.models import Case,When,Value,BooleanField
 
 class UserRegistration(APIView): 
     def post(self,request):
