@@ -10,6 +10,8 @@ from rest_framework.decorators import permission_classes
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.db.models import Q
 
+
+
 class UserRegistration(APIView): 
     def post(self,request):
         print(request.data)
@@ -51,7 +53,7 @@ class UserProfile(APIView):
 @permission_classes([IsAdminUser])
 class UserProfileView(APIView):
     def get(self,request,pk=None):
-        if pk is None:
+        if pk is None:      
             user = User.objects.exclude(is_admin=True)
             serilaizer = UserProfileAdminSerializer(user,many=True)
             return Response(serilaizer.data)            
@@ -80,7 +82,7 @@ class UserDoctorView(APIView):
         Q_Base = Q(doctor__is_verified=True)
         search_query = Q()
         if q:
-            search_query |= Q(username__icontains=q)|Q(doctor__department__icontains=q)|Q(doctor__hospital__icontains=q)
+            search_query = Q(username__icontains=q)|Q(doctor__department__icontains=q)|Q(doctor__hospital__icontains=q)
             Q_Base &= search_query 
         user = User.objects.filter(Q_Base)
         serializer = UserProfileAdminSerializer(user,many=True)
