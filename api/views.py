@@ -24,7 +24,7 @@ class UserRegistration(APIView):
                 is_doctor = serializer.validated_data['is_doctor']                
             )
         
-            return Response({"msg":"User Registered Succesfully..."},status=status.HTTP_201_CREATED)
+            return Response({"msg":"Registration Succesfull..."},status=status.HTTP_201_CREATED)
         return Response({'msg':serializer.errors},status=status.HTTP_400_BAD_REQUEST)
     
 

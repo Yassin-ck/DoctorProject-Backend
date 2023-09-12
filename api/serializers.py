@@ -45,7 +45,7 @@ class DoctorSerializer(serializers.ModelSerializer):
         fields = ['id','hospital','department','user']
         read_only_fields = ('user',)
         
-    
+        
 
     
 class UserProfileSerializer(serializers.ModelSerializer):
