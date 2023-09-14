@@ -73,7 +73,6 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
         if instance.is_doctor:
             doctor_data = validated_data.get('doctor')
-            print(doctor_data)
             if doctor_data:
                 doctors = Doctor.objects.filter(user=instance)
                 if doctors.exists():

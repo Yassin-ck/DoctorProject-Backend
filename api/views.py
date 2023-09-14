@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from .serializers import UserRegistrationSerializer,MyTokenObtainPairSerializer,UserProfileSerializer,UserProfileAdminSerializer
 from rest_framework.views import APIView
-from .models import User,Doctor
+from .models import User
 from rest_framework import status
 from .custompermission import UserPermision
 from rest_framework.permissions import IsAdminUser
@@ -14,7 +14,6 @@ from django.db.models import Q
 
 class UserRegistration(APIView): 
     def post(self,request):
-        print(request.data)
         serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
             User.objects.create_user(
@@ -33,11 +32,13 @@ class MyTokenObtainPairView(TokenObtainPairView):
     
 
 class UserProfile(APIView):
+    print('hi')
     def get(self,request):
         serializer = UserProfileSerializer(request.user)
         return Response(serializer.data,status=status.HTTP_200_OK)
     
     def patch(self,request):
+        print(request.data,'user')
         serializer = UserProfileSerializer(request.user,data=request.data,partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -45,6 +46,7 @@ class UserProfile(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def delete(self,request):
+        print(request.user)
         user = User.objects.get(id=request.user.id)
         user.delete()
         return Response({"msg":"Deleted"},status=status.HTTP_200_OK)
@@ -79,7 +81,7 @@ class UserProfileView(APIView):
 class UserDoctorView(APIView):
     def get(self,request):
         q = request.GET.get('q')
-        Q_Base = Q(doctor__is_verified=True)
+        Q_Base = Q(doctor__is_verified=True)&Q(is_active=True)
         search_query = Q()
         if q:
             search_query = Q(username__icontains=q)|Q(doctor__department__icontains=q)|Q(doctor__hospital__icontains=q)
