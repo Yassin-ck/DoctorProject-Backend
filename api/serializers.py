@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import User,Doctor
-from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
