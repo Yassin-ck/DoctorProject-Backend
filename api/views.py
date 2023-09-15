@@ -7,7 +7,7 @@ from rest_framework import status
 from .custompermission import UserPermision
 from rest_framework.permissions import IsAdminUser
 from rest_framework.decorators import permission_classes
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainPairView,TokenBlacklistView
 from django.db.models import Q
 
 
@@ -32,7 +32,6 @@ class MyTokenObtainPairView(TokenObtainPairView):
     
 
 class UserProfile(APIView):
-    print('hi')
     def get(self,request):
         serializer = UserProfileSerializer(request.user)
         return Response(serializer.data,status=status.HTTP_200_OK)

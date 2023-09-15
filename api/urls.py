@@ -9,5 +9,5 @@ urlpatterns = [
     path('profile/',views.UserProfile.as_view(),name='profile'),
     path('userprofile/',views.UserProfileView.as_view(),name='userprofile'),
     path('userprofile/<int:pk>/',views.UserProfileView.as_view(),name='userprofileedit'),
-    path('home/',views.UserDoctorView.as_view(),name='home')
+    path('home/',views.UserDoctorView.as_view(),name='home'),
 ]

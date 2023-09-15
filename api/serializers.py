@@ -1,7 +1,5 @@
 from rest_framework import serializers
-from rest_framework.fields import empty
 from .models import User,Doctor
-from rest_framework_simplejwt.tokens import RefreshToken,TokenError
 from rest_framework.exceptions import ValidationError
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
@@ -31,8 +29,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         token['username'] = user.username
         token['is_doctor'] = user.is_doctor
-        if hasattr(user,'is_admin'):
-            token['is_admin'] = user.is_admin
+        token['is_admin'] = user.is_admin
         return token
      
 
@@ -101,4 +98,12 @@ class UserProfileAdminSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
     
+
+
+
+
+
+
+
+
 
