@@ -36,6 +36,7 @@ class UserProfile(APIView):
         serializer = UserProfileSerializer(request.user)
         return Response(serializer.data,status=status.HTTP_200_OK)
     
+    
     def patch(self,request):
         print(request.data,'user')
         serializer = UserProfileSerializer(request.user,data=request.data,partial=True)
@@ -43,6 +44,7 @@ class UserProfile(APIView):
             serializer.save()
             return Response({'msg':'Profile Updated ...','Profile':serializer.data},status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
     
     def delete(self,request):
         print(request.user)

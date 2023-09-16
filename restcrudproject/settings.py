@@ -141,6 +141,14 @@ REST_FRAMEWORK = {
 AUTH_USER_MODEL = 'api.User'
 
 
+# import secrets
+
+# # Generate a random key
+# key = secrets.token_hex(32)  # 256 bits (32 bytes) key
+
+# # Print the generated key
+# print("JWT Signing Key:", key)
+
 SIMPLE_JWT = {
      "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=90),
@@ -149,6 +157,8 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
     "USER_ID_FIELD": "id",
+    "SIGNING_KEY": SECRET_KEY,
+
     "USER_ID_CLAIM": "user_id",
     "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
     "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),

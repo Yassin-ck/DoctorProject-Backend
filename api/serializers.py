@@ -42,7 +42,6 @@ class DoctorSerializer(serializers.ModelSerializer):
         read_only_fields = ('user',)
         
         
-
     
 class UserProfileSerializer(serializers.ModelSerializer):
     first_name = serializers.CharField(required=False)
@@ -55,8 +54,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        users = args[0]
-        if  users.is_doctor:
+        user = args[0]
+        if  user.is_doctor:
             self.fields['doctor'] = DoctorSerializer()
             
   
@@ -79,7 +78,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
                         doctor.is_verified=True
                     doctor.save()
                 else:
-                    raise ValidationError("No doctor record found for this user.")
+                    raise serializers.ValidationError("No doctor record found for this user.")
 
         instance.save() 
         return instance
@@ -90,7 +89,7 @@ class UserProfileAdminSerializer(serializers.ModelSerializer):
     doctor = DoctorSerializer(read_only=True)   
     class Meta:
         model = User
-        fields = ('id','first_name', 'last_name','username', 'email','is_doctor','is_active','doctor')
+        fields = ('id','first_name','last_name','username','email','is_doctor','is_active','doctor')
 
     def update(self,instance,validated_data):
         instance.is_active = validated_data.get('is_active',instance.is_active)
