@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import User,Doctor
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework.exceptions import ValidationError
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(style={'input_type':'password'},write_only=True)
@@ -78,7 +79,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
                         doctor.is_verified=True
                     doctor.save()
                 else:
-                    raise serializers.ValidationError("No doctor record found for this user.")
+                    raise ValidationError("No doctor record found for this user.")
 
         instance.save() 
         return instance
