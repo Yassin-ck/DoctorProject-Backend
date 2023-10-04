@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,BaseUserManager
+from django.db.models.query import QuerySet
 from phonenumber_field.modelfields import PhoneNumberField
 
 # Create your models here.
@@ -61,10 +62,8 @@ class User(AbstractBaseUser):
     @property
     def is_staff(self):
         return self.is_admin
-    
-    
 
-    
+
 class Doctor(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE)
     hospital = models.CharField(max_length=255,null=True,blank=True)
